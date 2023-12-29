@@ -50,3 +50,27 @@ module.exports.login=async function(req,res){
         });
     }
 };
+
+
+module.exports.protectRoute=async function(req,res,next){
+    let token;
+    if(req.cookies.isLogedIn){
+        token=req.cookies.login
+        let payload=jwt.verify(req.cookies.isLogedIn,JWT_key);
+
+        if(payload){
+            const user=await userModel.findById(payload.payload)
+           
+            req.id=user.id;
+            next();
+        }else{
+            res.json({
+                message:'user galat'
+            })
+        }
+    }else{
+        return res.json({
+            message:"sign in first"
+        })
+    }
+    }
